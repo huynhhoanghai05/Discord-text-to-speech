@@ -88,7 +88,7 @@ async def repeat(ctx, *, text=None):
 
     # Handle the exceptions that can occur
     except Exception as e:
-        await ctx.send("Từ từ nào mấy dứa!!")
+        await ctx.send("Từ từ nào mấy đứa!!")
         print(e)
 
     # except OpusNotLoaded as e:
