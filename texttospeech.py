@@ -56,17 +56,17 @@ async def on_message(message):
         tts.save('tts.mp3')
 
 
-		try:
-		    voice_client = await channel.connect(reconnect=False)
-		    audio_source = await discord.FFmpegPCMAudio('tts.mp3')
-		    if not voice_client.is_playing():
-            	voice_client.play(audio_source,after=None)
+        try:
+            voice_client = await channel.connect(reconnect=False)
+            audio_source = await discord.FFmpegPCMAudio('tts.mp3')
+            if not voice_client.is_playing():
+                voice_client.play(audio_source,after=None)
             else:
-            	response = "Đừng chặn họng chị !!"
-            	await message.channel.send(response)
-            	print(f"response: {response}")
-		except Exception as e:
-			print(e)
+                response = "Đừng chặn họng chị !!"
+                await message.channel.send(response)
+                print(f"response: {response}")
+        except Exception as e:
+            print(e)
 
         # disconnect voice when bot is finished speaking
 
