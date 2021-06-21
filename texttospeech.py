@@ -75,7 +75,7 @@ async def repeat(ctx, *, text=None):
         return
 
     # Lets prepare our text, and then save the audio file
-    tts = gTTS(text=text, lang="vi")
+    tts = gTTS(text=text, lang="vi", slow= True)
     tts.save("text.mp3")
 
     try:
