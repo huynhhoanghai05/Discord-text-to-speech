@@ -88,9 +88,9 @@ async def repeat(ctx, *, text=None):
 
     # Handle the exceptions that can occur
     except Exception as e:
-        await ctx.send(f"Lỗi rồi: \n`{e}`")
-    except TypeError as e:
-        await ctx.send(f"Lỗi rồi: \n`{e}`")
+        await ctx.send("Từ từ nào mấy dứa!!")
+        print(e)
+
     # except OpusNotLoaded as e:
     #     await ctx.send(f"OpusNotLoaded exception: \n`{e}`")
 
