@@ -58,9 +58,12 @@ async def on_message(message):
 
         try:
             voice_client = await channel.connect(reconnect=False)
-            audio_source = await discord.FFmpegPCMAudio('tts.mp3')
             if not voice_client.is_playing():
-                voice_client.play(audio_source,after=None)
+                voice_client.play(discord.FFmpegPCMAudio('tts.mp3'), after=lambda e: print(f"Finished playing: {e}"))
+
+                # Lets set the volume to 1
+                voice_client.source = discord.PCMVolumeTransformer(voice_client.source)
+                voice_client.source.volume = 1
             else:
                 response = "Đừng chặn họng chị !!"
                 await message.channel.send(response)
