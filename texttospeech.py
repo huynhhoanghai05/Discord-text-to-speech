@@ -29,7 +29,12 @@ async def connect(ctx, *, channel: discord.VoiceChannel=None):
         try:
             channel = ctx.author.voice.channel
         except AttributeError:
-            raise InvalidVoiceChannel('No channel to join. Please either specify a valid channel or join one.')
+            response = [
+            "Mày chưa vào kênh thoại mà dám gọi tao à? Ăn đấm không??",
+            "Vào kênh thoại đi mài!!",
+            "Bạn yêu vào kênh thoại đi rồi mình hú hí :3"
+            ]
+            await message.channel.send(random.choice(response))
 
     vc = ctx.voice_client
 
