@@ -65,13 +65,13 @@ async def repeat(ctx, *, text=None):
     """
     if not text:
         # We have nothing to speak
-        await ctx.send(f"Hey {ctx.author.mention}, I need to know what to say please.")
+        await ctx.send(f"Hey {ctx.author.mention}, mày bị khùng à")
         return
 
     vc = ctx.voice_client # We use it more then once, so make it an easy variable
     if not vc:
         # We are not currently in a voice channel
-        await ctx.send("I need to be in a voice channel to do this, please use the connect command.")
+        await ctx.send(f"Cho mày vài đấm bây giờ {ctx.author.mention}")
         return
 
     # Lets prepare our text, and then save the audio file
