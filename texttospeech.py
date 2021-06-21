@@ -6,7 +6,7 @@ import secrets
 import discord
 from discord.ext import commands
 
-client = discord.Client(activity=discord.Activity(name="Thay lời muốn nói <3"))
+client = discord.Client(activity=discord.Activity(type=discord.ActivityType.listening,name="Thay lời muốn nói <3"))
 language = 'vi'
 voice_client, channel = None, None
 
@@ -16,7 +16,6 @@ async def on_ready():
     print(client.user.name)
     print('id: {}'.format(client.user.id))
     print('------')
- 
 
 @client.event
 async def on_message(message):
@@ -56,13 +55,21 @@ async def on_message(message):
         tts = gTTS(text=" ".join(split_msg[1:]), lang=language, slow=False)
         tts.save('tts.mp3')
 
-        voice_client = await channel.connect(reconnect=False)
-        audio_source = await discord.FFmpegOpusAudio.from_probe('tts.mp3')
-        voice_client.play(audio_source)
+
+		try:
+		    voice_client = await channel.connect(reconnect=False)
+		    audio_source = await discord.FFmpegPCMAudio('tts.mp3')
+		    if not voice_client.is_playing():
+            	voice_client.play(audio_source,after=None)
+            else:
+            	response = "Đừng chặn họng chị !!"
+            	await message.channel.send(response)
+            	print(f"response: {response}")
+		except Exception as e:
+			print(e)
 
         # disconnect voice when bot is finished speaking
-        while voice_client.is_playing():
-            continue
+
     elif message.content == 'raise-exception':
         raise discord.DiscordException
 
