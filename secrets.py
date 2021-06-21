@@ -1,2 +1,2 @@
 # bot token
-TOKEN = "YOUR-TOKEN"
+TOKEN = "Your_token"

@@ -6,76 +6,101 @@ import secrets
 import discord
 from discord.ext import commands
 
-client = discord.Client(activity=discord.Activity(type=discord.ActivityType.listening,name="Thay lời muốn nói <3"))
+bot = commands.Bot(command_prefix='!xu',activity=discord.Activity(type=discord.ActivityType.listening,name="Thay lời muốn nói <3"))
 language = 'vi'
 voice_client, channel = None, None
 
-@client.event
+@bot.event
 async def on_ready():
-    print('Connected as')
-    print(client.user.name)
-    print('id: {}'.format(client.user.id))
-    print('------')
+    print(f'{bot.user.name} has connected to Discord!')
 
-@client.event
-async def on_message(message):
+@bot.command(name="oi")
+async def connect(ctx, *, channel: discord.VoiceChannel=None):
+    """
+    Connect to a voice channel
+    This command also handles moving the bot to different channels.
 
-    # display logs
-    print(message)
-    print(f"message: {message.content}")
+    Params:
+    - channel: discord.VoiceChannel [Optional]
+        The channel to connect to. If a channel is not specified, an attempt to join the voice channel you are in
+        will be made.
+    """
+    if not channel:
+        try:
+            channel = ctx.author.voice.channel
+        except AttributeError:
+            raise InvalidVoiceChannel('No channel to join. Please either specify a valid channel or join one.')
 
-    # allow voice client to be used across different commands
-    global voice_client, channel
+    vc = ctx.voice_client
 
-    # check bot
-    if message.author == client.user:
+    if vc:
+        if vc.channel.id == channel.id:
+            return
+        try:
+            await vc.move_to(channel)
+        except TimeoutError:
+            raise VoiceConnectionError(f'Moving to channel: <{channel}> timed out.')
+    else:
+        try:
+            await channel.connect()
+        except TimeoutError:
+            raise VoiceConnectionError(f'Connecting to channel: <{channel}> timed out.')
+
+    await ctx.send(f'Chị vào với mấy cưng đây **{channel}**')
+
+@bot.command(name="ka")
+async def repeat(ctx, *, text=None):
+    """
+    A command which saves `text` into a speech file with
+    gtts and then plays it back in the current voice channel.
+
+    Params:
+     - text [Optional]
+        This will be the text we speak in the voice channel
+    """
+    if not text:
+        # We have nothing to speak
+        await ctx.send(f"Hey {ctx.author.mention}, I need to know what to say please.")
         return
 
-    # check command
-    split_msg = message.content.split()
-    if len(split_msg) >= 2 and split_msg[0] == 'tts':
+    vc = ctx.voice_client # We use it more then once, so make it an easy variable
+    if not vc:
+        # We are not currently in a voice channel
+        await ctx.send("I need to be in a voice channel to do this, please use the connect command.")
+        return
 
-        # check voice channel
-        if voice_client:
-            if channel != voice_client.channel:
-                await voice_client.disconnect()
+    # Lets prepare our text, and then save the audio file
+    tts = gTTS(text=text, lang="vi")
+    tts.save("text.mp3")
 
-        try:
-            channel = message.author.voice.channel
-        except AttributeError:
-            response = [
-            "Mày chưa vào kênh thoại mà dám gọi tao à? Ăn đấm không??",
-            "Vào kênh thoại đi mài!!",
-            "Bạn yêu vào kênh thoại đi rồi mình hú hí :3"
-            ]
-            await message.channel.send(random.choice(response))
-            print(f"response: {response}")
+    try:
+        # Lets play that mp3 file in the voice channel
+        vc.play(discord.FFmpegPCMAudio(executable="D:/ffmpeg/bin/ffmpeg.exe",source = 'text.mp3'), after=lambda e: print(f"Finished playing: {e}"))
 
-        # create text to speech
-        tts = gTTS(text=" ".join(split_msg[1:]), lang=language, slow=False)
-        tts.save('tts.mp3')
+        # Lets set the volume to 1
+        vc.source = discord.PCMVolumeTransformer(vc.source)
+        vc.source.volume = 1
 
+    # Handle the exceptions that can occur
+    except Exception as e:
+        await ctx.send(f"Lỗi rồi: \n`{e}`")
+    except TypeError as e:
+        await ctx.send(f"Lỗi rồi: \n`{e}`")
+    # except OpusNotLoaded as e:
+    #     await ctx.send(f"OpusNotLoaded exception: \n`{e}`")
 
-        try:
-            voice_client = await channel.connect(reconnect=False)
-            if not voice_client.is_playing():
-                voice_client.play(discord.FFmpegPCMAudio('tts.mp3'), after=lambda e: print(f"Finished playing: {e}"))
+@bot.command("bye")
+async def disconnect(ctx):
+    """
+    Disconnect from a voice channel, if in one
+    """
+    vc = ctx.voice_client
 
-                # Lets set the volume to 1
-                voice_client.source = discord.PCMVolumeTransformer(voice_client.source)
-                voice_client.source.volume = 1
-            else:
-                response = "Đừng chặn họng chị !!"
-                await message.channel.send(response)
-                print(f"response: {response}")
-        except Exception as e:
-            print(e)
+    if not vc:
+        await ctx.send("Chưa vào đã đuổi ??")
+        return
 
-        # disconnect voice when bot is finished speaking
+    await vc.disconnect()
+    await ctx.send("Chị của mấy đứa đi nhá !")
 
-    elif message.content == 'raise-exception':
-        raise discord.DiscordException
-
-
-client.run(secrets.TOKEN)
-
+bot.run(secrets.TOKEN)
