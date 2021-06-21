@@ -34,7 +34,7 @@ async def connect(ctx, *, channel: discord.VoiceChannel=None):
             "Vào kênh thoại đi mài!!",
             "Bạn yêu vào kênh thoại đi rồi mình hú hí :3"
             ]
-            await message.channel.send(random.choice(response))
+            await ctx.send(random.choice(response))
 
     vc = ctx.voice_client
 
