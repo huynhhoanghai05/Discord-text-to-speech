@@ -1,1 +1,1 @@
-# Fun discord bottext-to-speech
+# Fun discord bot text-to-speech
