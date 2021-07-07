@@ -6,25 +6,15 @@ import secrets
 import discord
 from discord.ext import commands
 
-bot = commands.Bot(command_prefix='!xu',activity=discord.Activity(type=discord.ActivityType.listening,name="Thay lời muốn nói <3"))
+bot = commands.Bot(command_prefix='x',activity=discord.Activity(type=discord.ActivityType.listening,name="Thay lời muốn nói <3"))
 language = 'vi'
-voice_client, channel = None, None
 
 @bot.event
 async def on_ready():
     print(f'{bot.user.name} has connected to Discord!')
 
-@bot.command(name="oi")
+@bot.command(name="1")
 async def connect(ctx, *, channel: discord.VoiceChannel=None):
-    """
-    Connect to a voice channel
-    This command also handles moving the bot to different channels.
-
-    Params:
-    - channel: discord.VoiceChannel [Optional]
-        The channel to connect to. If a channel is not specified, an attempt to join the voice channel you are in
-        will be made.
-    """
     if not channel:
         try:
             channel = ctx.author.voice.channel
@@ -53,16 +43,9 @@ async def connect(ctx, *, channel: discord.VoiceChannel=None):
 
     await ctx.send(f'Chị vào với mấy cưng đây **{channel}**')
 
-@bot.command(name="ka")
+@bot.command(name="x")
 async def repeat(ctx, *, text=None):
-    """
-    A command which saves `text` into a speech file with
-    gtts and then plays it back in the current voice channel.
 
-    Params:
-     - text [Optional]
-        This will be the text we speak in the voice channel
-    """
     if not text:
         # We have nothing to speak
         await ctx.send(f"Hey {ctx.author.mention}, mày bị khùng à")
@@ -75,7 +58,7 @@ async def repeat(ctx, *, text=None):
         return
 
     # Lets prepare our text, and then save the audio file
-    tts = gTTS(text=text, lang="vi", slow= True)
+    tts = gTTS(text=text, lang=language, slow= False)
     tts.save("text.mp3")
 
     try:
