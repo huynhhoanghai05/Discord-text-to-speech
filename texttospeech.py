@@ -38,8 +38,9 @@ async def connect(ctx, *, channel: discord.VoiceChannel=None):
     else:
         try:
             await channel.connect()
-        except TimeoutError:
-            raise VoiceConnectionError(f'Connecting to channel: <{channel}> timed out.')
+        except Exception as e:
+            await ctx.send("Từ từ nào mấy đứa!! Lỗi rồi :(")
+            print(e)
 
     await ctx.send(f'Chị vào với mấy cưng đây **{channel}**')
 
@@ -71,7 +72,7 @@ async def repeat(ctx, *, text=None):
 
     # Handle the exceptions that can occur
     except Exception as e:
-        await ctx.send("Từ từ nào mấy đứa!!")
+        await ctx.send("Từ từ nào mấy đứa!! Lỗi rồi :(")
         print(e)
 
     # except OpusNotLoaded as e:
